@@ -9,7 +9,12 @@ class AdvertisementStatusChoices(models.TextChoices):
 
     OPEN = "OPEN", "Открыто"
     CLOSED = "CLOSED", "Закрыто"
-    FAVOURITES= "Избранное"
+
+class AdvertisementFavourites(models.TextChoices):
+    FAVOURITES = "FAVOURITES", "Избранное"
+    NO_FAVOURITES = "NO FAVOURITES", "Не избранное"
+
+
 
 class Advertisement(models.Model):
     """Объявление."""
@@ -19,6 +24,10 @@ class Advertisement(models.Model):
     status = models.TextField(
         choices=AdvertisementStatusChoices.choices,
         default=AdvertisementStatusChoices.OPEN,
+    )
+    favourites = models.TextField(
+        choices=AdvertisementFavourites.choices,
+        default=AdvertisementFavourites.NO_FAVOURITES
     )
 
 

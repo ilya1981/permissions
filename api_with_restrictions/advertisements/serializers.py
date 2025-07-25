@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django_filters import DateFromToRangeFilter
-from advertisements.models import Advertisement,AdvertisementStatusChoices
+from sqlalchemy.orm.sync import update
+from advertisements.models import Advertisement,AdvertisementStatusChoices, AdvertisementFavourites
 
 
 
@@ -25,7 +26,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
         fields = ('id', 'title', 'description', 'creator',
-                  'status', 'created_at', 'updated_at',)
+                  'status', 'created_at', 'updated_at', 'favourites')
         read_only_fields = ['creator']
 
     def create(self, validated_data):
@@ -40,10 +41,12 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         validated_data["creator"] = self.context["request"].user
         return super().create(validated_data)
 
+
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
         if Advertisement.objects.filter(creator=self.context["request"].user).filter(status='OPEN').count() > 10 and data.get('status') != 'CLOSED':
             raise serializers.ValidationError('Превышен лимит 10 открытых объявлений ')
+
         # TODO: добавьте требуемую валидацию
 
         return data
